@@ -1,0 +1,18 @@
+1. Integrantes e Linguagem:
+Vinícius Kenzo Kitamura 
+José Matheus Cristo 
+[Não conseguimos um terceiro integrante] 
+Linguagem: Python
+
+2. Proposta do Projeto: 
+O projeto consiste num sistema de gestão de eventos e venda de ingressos online. O público-alvo são participantes que pretendem adquirir bilhetes para palestras, espetáculos ou workshops sem complicações, além dos organizadores responsáveis pela gestão dos eventos e controlo de lotação.
+O participante realiza o seu registo e consegue consultar os eventos disponíveis, verificar horários, locais e selecionar o tipo de ingresso desejado (como Inteira, Meia-entrada ou VIP), indicando a quantidade pretendida. Ao finalizar a reserva, escolhe a forma de pagamento e recebe o comprovativo de confirmação.
+Os organizadores podem criar novos eventos, definir sessões, gerir os lotes de bilhetes e acompanhar os relatórios de vendas.
+A cada compra concluída, o sistema atualiza automaticamente a lotação do evento e impede a venda caso a capacidade máxima seja atingida
+
+3. Modelagem de Classes:
+Herança: Participante e Organizador herdam da classe abstrata Usuario. Além disso, IngressoInteira, IngressoMeia e IngressoVIP herdam da classe abstrata Ingresso, aplicando regras específicas de cálculo e descontos no valor do bilhete.
+Composição: A classe Evento possui objetos da classe Sessao; se o evento for cancelado ou eliminado, as suas sessões associadas deixam de existir. A classe Inscricao também possui uma relação de composição com Comprovante, que é gerado especificamente para essa transação.
+Agregação: A classe Evento agrega objetos da classe Categoria (ex.: Palestra, Show, Workshop). As categorias existem no sistema independentemente de estarem associadas a um evento específico.
+Associação: Participante realiza Inscricao. Um participante pode realizar várias inscrições, enquanto cada inscrição pertence a um único participante. Adicionalmente, cada Inscricao referencia um ou mais objetos da classe Ingresso.
+Dependência: A classe GerenciadorDeEventos depende da classe Pagamento para processar a aprovação da compra e emitir a confirmação dos bilhetes.
