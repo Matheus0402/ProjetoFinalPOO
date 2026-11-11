@@ -8,7 +8,7 @@ class Comprovante:
         self._participante_nome = participante.nome
         self._valor_total = valor_total
 
-    def obter_resumo((self) -> str:
+    def obter_resumo(self) -> str:
         return f"Comprovante [{self._codigo_inscricao}] | Titular: {self._participante_nome} | Total Pago: R$ {self._valor_total:.2f}"
 
 
