@@ -13,3 +13,11 @@ class ParticipanteJaCadastradoError(EventoError):
 
 class LotacaoEsgotadaError(EventoError):
     pass
+
+
+class DadosInvalidosError(EventoError):
+    pass
+
+
+class CPFInvalidoError(EventoError):
+    pass
