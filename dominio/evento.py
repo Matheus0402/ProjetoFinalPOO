@@ -1,3 +1,6 @@
+from dominio.excecoes import LotacaoEsgotadaError
+
+
 class Categoria:
     def __init__(self, nome: str):
         self._nome = nome
@@ -39,7 +42,7 @@ class Evento:
 
     def incrementar_vendas(self):
         if not self.vaga_disponivel():
-            raise Exception(f"Evento '{self._nome}' está com lotação máxima atingida!")
+            raise LotacaoEsgotadaError(f"Evento '{self._nome}' está com lotação máxima atingida!")
         self._ingressos_vendidos += 1
 
     @property
