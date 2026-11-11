@@ -1,4 +1,5 @@
 from dominio.usuario import Participante
+from dominio.excecoes import EventoError, ParticipanteJaCadastradoError
 from dominio.evento import Evento, Categoria
 from dominio.ingresso import Ingresso
 
@@ -54,7 +55,15 @@ class GerenciadorDeEventos:
         self._eventos.append(evento)
 
     def cadastrar_participante(self, participante: Participante):
+        if self.buscar_participante(participante.identificacao) is not None:
+            raise ParticipanteJaCadastradoError("Já existe um participante com esse RA!")
         self._participantes.append(participante)
+
+    def buscar_participante(self, identificacao: str):
+        for p in self._participantes:
+            if p.identificacao == identificacao:
+                return p
+        return None  # não achou (como retornar NULL em C)
 
     def realizar_inscricao(self, participante: Participante, evento: Evento, ingresso: Ingresso, forma_pagamento: str) -> Inscricao:
         valor = ingresso.calcular_preco_final()
@@ -66,7 +75,7 @@ class GerenciadorDeEventos:
             self._inscricoes.append(nova_inscricao)
             return nova_inscricao
         else:
-            raise Exception("Falha no processamento do pagamento.")
+            raise EventoError("Falha no processamento do pagamento.")
 
     @property
     def eventos(self):
