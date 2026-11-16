@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from dominio.usuario import Participante
+from dominio.usuario import Visitante
 from dominio.evento import Evento, Categoria
 from dominio.ingresso import IngressoInteira, IngressoMeia, IngressoVIP
 from dominio.gerenciador import GerenciadorDeEventos
@@ -25,10 +25,10 @@ class SistemaEventosGUI:
         cat_tech = Categoria("Tecnologia")
         cat_arte = Categoria("Cultura")
 
-        ev1 = Evento("Tech Conference 2026", 2, cat_tech)
+        ev1 = Evento("Tech Conference 2026", 2, cat_tech, 100.0)
         ev1.adicionar_sessao("15/11/2026 14:00", "Auditório Central")
 
-        ev2 = Evento("Festival de Jazz", 50, cat_arte)
+        ev2 = Evento("Festival de Jazz", 50, cat_arte, 60.0)
         ev2.adicionar_sessao("20/11/2026 20:00", "Teatro Municipal")
 
         self.gerenciador.cadastrar_evento(ev1)
@@ -130,7 +130,7 @@ class SistemaEventosGUI:
             messagebox.showwarning("Campos Obrigatórios", "Preencha nome, e-mail e CPF.")
             return
 
-        participante = Participante(nome, email, cpf)
+        participante = Visitante(nome, email, cpf)
         self.gerenciador.cadastrar_participante(participante)
 
         self.entry_nome.delete(0, tk.END)
@@ -155,7 +155,7 @@ class SistemaEventosGUI:
         participante = self.gerenciador.participantes[idx_p]
         evento = self.gerenciador.eventos[idx_e]
 
-        preco_base = 100.0
+        preco_base = evento.preco_base
         if tipo_sel == 0:
             ingresso = IngressoInteira(preco_base)
         elif tipo_sel == 1:
