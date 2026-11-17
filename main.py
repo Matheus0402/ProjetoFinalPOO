@@ -1,6 +1,7 @@
-from dominio.usuario import Aluno, Visitante, Organizador, formatar_identificacao
+from dominio.usuario import Aluno, Visitante, formatar_identificacao
+from dominio.dados_iniciais import carregar_dados_iniciais
 from dominio.evento import Evento, Categoria
-from dominio.gerenciador import GerenciadorDeEventos
+from dominio.gerenciador import GerenciadorDeEventos, Pagamento
 from dominio.excecoes import EventoError
 
 
@@ -98,7 +99,9 @@ def menu_participante(gerenciador):
 
             # O gerenciador decide quais ingressos existem para esse participante
             opcoes = gerenciador.ingressos_disponiveis(evento_sel, participante_sel)
-            if evento_sel.eh_gratuito_para(participante_sel):
+            if evento_sel.preco_base == 0:
+                print("\nEste evento é gratuito para todos!")
+            elif evento_sel.eh_gratuito_para(participante_sel):
                 print("\nEste evento é gratuito para alunos da UTFPR!")
 
             print("\nSelecione o Tipo de Ingresso:")
@@ -110,8 +113,21 @@ def menu_participante(gerenciador):
                 continue
             ingresso = opcoes[tipo]
 
+            forma_pagamento = ""
+            if ingresso.calcular_preco_final() > 0:
+                formas = Pagamento.FORMAS_DISPONIVEIS
+                print("\nForma de pagamento (simulação):")
+                for i, forma in enumerate(formas, 1):
+                    print(f"{i}. {forma}")
+
+                escolha = ler_numero("Opção de pagamento: ")
+                if escolha < 1 or escolha > len(formas):
+                    print("Forma de pagamento inválida. Inscrição não realizada.")
+                    continue
+                forma_pagamento = formas[escolha - 1]
+
             try:
-                inscricao = gerenciador.realizar_inscricao(participante_sel, evento_sel, ingresso, "Cartão de Crédito")
+                inscricao = gerenciador.realizar_inscricao(participante_sel, evento_sel, ingresso, forma_pagamento)
                 print("\nInscrição realizada com sucesso!")
                 print(inscricao.comprovante.obter_resumo())
             except EventoError as err:
@@ -136,6 +152,7 @@ def menu_organizador(gerenciador):
         print("2. Adicionar Sessão a um Evento")
         print("3. Relatório de Vendas")
         print("4. Voltar")
+        print("5. Criar Categoria")
         opcao = input("Escolha uma opção: ")
 
         if opcao == "1":
@@ -185,31 +202,20 @@ def menu_organizador(gerenciador):
 
         elif opcao == "4":
             break
+        elif opcao == "5":
+            try:
+                categoria = Categoria(input("Nome da nova categoria: "))
+                gerenciador.cadastrar_categoria(categoria)
+                print(f"Categoria '{categoria.nome}' cadastrada com sucesso!")
+            except EventoError as erro:
+                print(f"Erro: {erro}")
         else:
             print("Opção inválida!")
 
 
 def menu_principal():
     gerenciador = GerenciadorDeEventos()
-
-    # Dados de teste pré-carregados
-    cat_tech = Categoria("Tecnologia")
-    cat_arte = Categoria("Cultura")
-    cat_palestra = Categoria("Palestra")
-    gerenciador.cadastrar_categoria(cat_tech)
-    gerenciador.cadastrar_categoria(cat_arte)
-    gerenciador.cadastrar_categoria(cat_palestra)
-
-    gerenciador.cadastrar_organizador(Organizador("Organização UTFPR", "eventos@utfpr.edu.br", "admin"))
-
-    ev1 = Evento("Tech Conference 2026", 2, cat_tech, 100.0)  # Limite 2 para teste de lotação
-    ev1.adicionar_sessao("15/11/2026 14:00", "Auditório Bloco D")
-
-    ev2 = Evento("Festival de Jazz", 50, cat_arte, 60.0)
-    ev2.adicionar_sessao("20/11/2026 20:00", "Auditório Bloco N313")
-
-    gerenciador.cadastrar_evento(ev1)
-    gerenciador.cadastrar_evento(ev2)
+    carregar_dados_iniciais(gerenciador)
 
     while True:
         print("\n=== SISTEMA DE GESTÃO DE EVENTOS ===")

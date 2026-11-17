@@ -63,6 +63,9 @@ class Participante(Usuario):
     def adicionar_inscricao(self, inscricao):
         self._historico_inscricoes.append(inscricao)
 
+    def remover_inscricao(self, inscricao):
+        self._historico_inscricoes.remove(inscricao)
+
     def tem_direito_gratuidade(self) -> bool:
         return False  # por padrão não tem; quem pode (Aluno) troca para True
 

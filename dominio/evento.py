@@ -1,9 +1,13 @@
+from math import isfinite
+
 from dominio.excecoes import LotacaoEsgotadaError, DadosInvalidosError
 
 
 class Categoria:
     def __init__(self, nome: str):
-        self._nome = nome
+        self._nome = nome.strip()
+        if not self._nome:
+            raise DadosInvalidosError("Informe um nome para a categoria.")
 
     @property
     def nome(self) -> str:
@@ -30,8 +34,8 @@ class Evento:
             raise DadosInvalidosError("O nome do evento não pode ser vazio.")
         if capacidade_maxima <= 0:
             raise DadosInvalidosError("A capacidade deve ser maior que zero.")
-        if preco_base < 0:
-            raise DadosInvalidosError("O preço não pode ser negativo.")
+        if not isfinite(preco_base) or preco_base < 0:
+            raise DadosInvalidosError("O preço deve ser um número válido e não negativo.")
 
         self._nome = nome.strip()
         self._capacidade_maxima = capacidade_maxima
@@ -56,6 +60,10 @@ class Evento:
             raise LotacaoEsgotadaError(f"Evento '{self._nome}' está com lotação máxima atingida!")
         self._ingressos_vendidos += 1
 
+    def liberar_vaga(self):
+        if self._ingressos_vendidos > 0:
+            self._ingressos_vendidos -= 1
+
     @property
     def nome(self) -> str:
         return self._nome
@@ -69,8 +77,9 @@ class Evento:
         return self._ingressos_vendidos
 
     def eh_gratuito_para(self, participante) -> bool:
-        # só é gratuito se o evento for marcado como gratuito E o participante tiver esse direito
-        return self._gratuito_para_alunos and participante.tem_direito_gratuidade()
+        return self._preco_base == 0 or (
+            self._gratuito_para_alunos and participante.tem_direito_gratuidade()
+        )
 
     @property
     def gratuito_para_alunos(self) -> bool:
