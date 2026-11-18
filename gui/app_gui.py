@@ -68,7 +68,7 @@ class SistemaEventosGUI:
         ttk.Label(self.tela_menu, text="Escolha uma opção para continuar.", style="Apoio.TLabel").pack(anchor="w", pady=(4, 14))
         botoes = ttk.Frame(self.tela_menu)
         botoes.pack(anchor="w")
-        ttk.Button(botoes, text="Ver agenda", command=lambda: self._mostrar_tela(self.aba_eventos),
+        ttk.Button(botoes, text="Ver agenda", command=lambda: self._mostrar_tela(self.aba_eventos), # lambda faz acontecer somente no click
                    style="Primario.TButton").grid(row=0, column=0, sticky="ew", padx=(0, 8))
         self.botao_inscricao = ttk.Button(botoes, text="Fazer inscrição", command=lambda: self._mostrar_tela(self.aba_compra))
         self.botao_inscricao.grid(row=0, column=1, sticky="ew", padx=(0, 8))
@@ -90,8 +90,9 @@ class SistemaEventosGUI:
         if tela in (self.aba_organizador, self.consultas.tela_confirmados) and self.organizador is None:
             return
 
+        # Criamos uma janela principal. Cada tela é um Frame. Quando clica em Ver agenda, escondo o Frame do menu e mostra o da agenda dentro da mesma janela.
         if self.tela_atual is not None:
-            self.tela_atual.pack_forget()
+            self.tela_atual.pack_forget() #pack forget tira o painel visivel, mas nao apaga o painel
         tela.pack(fill="both", expand=True)
         self.tela_atual = tela
         estado = "disabled" if tela in (self.aba_acesso, self.tela_menu) else "normal"

@@ -120,7 +120,7 @@ class GerenciadorDeEventos:
             if inscricao.participante.identificacao == participante.identificacao:
                 raise EventoError(f"Você já tem uma inscrição confirmada para '{evento.nome}'.")
 
-        valor = ingresso.calcular_preco_final()
+        valor = ingresso.calcular_preco_final() # polimorfismo trabalhando
 
         if valor == 0:
             forma_pagamento = "Sem cobrança"
