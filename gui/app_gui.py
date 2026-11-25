@@ -26,6 +26,7 @@ class SistemaEventosGUI:
         carregar_dados_iniciais(self.gerenciador)
         configurar_estilos(self.root)
         self._criar_widgets()
+        self.gerenciador.adicionar_observador(self._atualizar_listas)
         self._sair_da_area()
         self._atualizar_listas()
 
