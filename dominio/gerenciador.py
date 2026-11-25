@@ -1,5 +1,5 @@
 from dominio.usuario import Participante, Organizador
-from dominio.excecoes import DadosInvalidosError, EventoError, ParticipanteJaCadastradoError
+from dominio.excecoes import (DadosInvalidosError, ParticipanteJaCadastradoError, InscricaoDuplicadaError, PagamentoInvalidoError, InscricaoNaoEncontradaError)
 from dominio.evento import Evento, Categoria
 from dominio.ingresso import Ingresso, IngressoInteira, IngressoMeia, IngressoVIP, IngressoGratuito
 from dominio.observador import Observavel
@@ -121,14 +121,14 @@ class GerenciadorDeEventos(Observavel): # adicionado oberservavel, estabelecendo
     def realizar_inscricao(self, participante: Participante, evento: Evento, ingresso: Ingresso, forma_pagamento: str = "") -> Inscricao:
         for inscricao in self.inscricoes_do_evento(evento):
             if inscricao.participante.identificacao == participante.identificacao:
-                raise EventoError(f"Você já tem uma inscrição confirmada para '{evento.nome}'.")
+                raise InscricaoDuplicadaError(f"Você já tem uma inscrição confirmada para '{evento.nome}'.")
 
         valor = ingresso.calcular_preco_final() # polimorfismo trabalhando
 
         if valor == 0:
             forma_pagamento = "Sem cobrança"
         elif not Pagamento.processar_pagamento(valor, forma_pagamento):
-            raise EventoError("Pagamento simulado não aprovado. Escolha uma forma de pagamento válida.")
+            raise PagamentoInvalidoError("Pagamento simulado não aprovado. Escolha uma forma de pagamento válida.")
         else:
             forma_pagamento += " (simulado)"
 
@@ -148,7 +148,7 @@ class GerenciadorDeEventos(Observavel): # adicionado oberservavel, estabelecendo
                 self.notificar_observadores()
                 return
 
-    raise EventoError("Inscrição não encontrada para este participante.")
+        raise InscricaoNaoEncontradaError("Inscrição não encontrada para este participante.")
     @property
     def eventos(self):
         return self._eventos
