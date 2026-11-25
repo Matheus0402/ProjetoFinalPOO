@@ -21,3 +21,14 @@ class DadosInvalidosError(EventoError):
 
 class CPFInvalidoError(EventoError):
     pass
+
+class InscricaoDuplicadaError(EventoError): # novidade sprint 4
+    pass
+
+
+class PagamentoInvalidoError(EventoError): #  novidade sprint 4
+    pass
+
+
+class InscricaoNaoEncontradaError(EventoError): # novidade sprint 4
+    pass

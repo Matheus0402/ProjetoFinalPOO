@@ -1,7 +1,8 @@
 from dominio.usuario import Participante, Organizador
-from dominio.excecoes import DadosInvalidosError, EventoError, ParticipanteJaCadastradoError
+from dominio.excecoes import (DadosInvalidosError, ParticipanteJaCadastradoError, InscricaoDuplicadaError, PagamentoInvalidoError, InscricaoNaoEncontradaError)
 from dominio.evento import Evento, Categoria
 from dominio.ingresso import Ingresso, IngressoInteira, IngressoMeia, IngressoVIP, IngressoGratuito
+from dominio.observador import Observavel
 
 class Comprovante:
     def __init__(self, codigo_inscricao: str, participante: Participante, valor_total: float, forma_pagamento: str):
@@ -57,8 +58,9 @@ class Pagamento:
         return valor > 0 and forma in Pagamento.FORMAS_DISPONIVEIS
 
 
-class GerenciadorDeEventos:
+class GerenciadorDeEventos(Observavel): # adicionado oberservavel, estabelecendo a heranca
     def __init__(self):
+        super().__init__() # adicionado dentro do construtor, pra inicializar a lista de oberservadores da classe pai
         self._eventos = []
         self._categorias = []
         self._participantes = []
@@ -68,6 +70,7 @@ class GerenciadorDeEventos:
 
     def cadastrar_evento(self, evento: Evento):
         self._eventos.append(evento)
+        self.notificar_observadores()
 
     def cadastrar_categoria(self, categoria: Categoria):
         # Agregação: as categorias existem aqui, independentes dos eventos
@@ -118,14 +121,14 @@ class GerenciadorDeEventos:
     def realizar_inscricao(self, participante: Participante, evento: Evento, ingresso: Ingresso, forma_pagamento: str = "") -> Inscricao:
         for inscricao in self.inscricoes_do_evento(evento):
             if inscricao.participante.identificacao == participante.identificacao:
-                raise EventoError(f"Você já tem uma inscrição confirmada para '{evento.nome}'.")
+                raise InscricaoDuplicadaError(f"Você já tem uma inscrição confirmada para '{evento.nome}'.")
 
-        valor = ingresso.calcular_preco_final()
+        valor = ingresso.calcular_preco_final() # polimorfismo trabalhando
 
         if valor == 0:
             forma_pagamento = "Sem cobrança"
         elif not Pagamento.processar_pagamento(valor, forma_pagamento):
-            raise EventoError("Pagamento simulado não aprovado. Escolha uma forma de pagamento válida.")
+            raise PagamentoInvalidoError("Pagamento simulado não aprovado. Escolha uma forma de pagamento válida.")
         else:
             forma_pagamento += " (simulado)"
 
@@ -133,6 +136,7 @@ class GerenciadorDeEventos:
         nova_inscricao = Inscricao(codigo, participante, evento, ingresso, forma_pagamento)
         self._inscricoes.append(nova_inscricao)
         self._proximo_codigo += 1
+        self.notificar_observadores() # queremos notificar uma alteração somente depois que a inscrição for realizada com sucesso | Se o evento estiver lotado ou a inscrição for duplicada, uma exceção interromperá o método antes de chegar à notificação.
         return nova_inscricao
 
     def cancelar_inscricao(self, participante: Participante, codigo: str):
@@ -141,10 +145,10 @@ class GerenciadorDeEventos:
                 participante.remover_inscricao(inscricao)
                 self._inscricoes.remove(inscricao)
                 inscricao.evento.liberar_vaga()
+                self.notificar_observadores()
                 return
 
-        raise EventoError("Inscrição não encontrada para este participante.")
-
+        raise InscricaoNaoEncontradaError("Inscrição não encontrada para este participante.")
     @property
     def eventos(self):
         return self._eventos
