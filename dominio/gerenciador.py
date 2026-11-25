@@ -70,6 +70,7 @@ class GerenciadorDeEventos(Observavel): # adicionado oberservavel, estabelecendo
 
     def cadastrar_evento(self, evento: Evento):
         self._eventos.append(evento)
+        self.notificar_observadores()
 
     def cadastrar_categoria(self, categoria: Categoria):
         # Agregação: as categorias existem aqui, independentes dos eventos
@@ -144,10 +145,10 @@ class GerenciadorDeEventos(Observavel): # adicionado oberservavel, estabelecendo
                 participante.remover_inscricao(inscricao)
                 self._inscricoes.remove(inscricao)
                 inscricao.evento.liberar_vaga()
+                self.notificar_observadores()
                 return
 
-        raise EventoError("Inscrição não encontrada para este participante.")
-
+    raise EventoError("Inscrição não encontrada para este participante.")
     @property
     def eventos(self):
         return self._eventos
