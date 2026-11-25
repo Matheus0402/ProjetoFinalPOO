@@ -5,11 +5,10 @@ from dominio.gerenciador import Pagamento
 
 
 class TelaInscricao(ttk.Frame):
-    def __init__(self, pai, gerenciador, criar_combo, participante_atual, ao_inscrever):
+    def __init__(self, pai, gerenciador, criar_combo, participante_atual):
         super().__init__(pai, padding=16)
         self.gerenciador = gerenciador
         self.participante_atual = participante_atual
-        self.ao_inscrever = ao_inscrever
         self.opcoes_ingresso = []
 
         self.combo_evento = criar_combo(self, 0, "Evento")
@@ -72,5 +71,5 @@ class TelaInscricao(ttk.Frame):
             messagebox.showerror("Inscrição não realizada", str(erro))
             return
 
-        self.ao_inscrever()
+
         messagebox.showinfo("Inscrição confirmada", inscricao.comprovante.obter_resumo())

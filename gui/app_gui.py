@@ -50,8 +50,10 @@ class SistemaEventosGUI:
             self.conteudo, self.gerenciador, self._campo, self._combo, self._abrir_area_participante
         )
         self.aba_compra = TelaInscricao(
-            self.conteudo, self.gerenciador, self._combo, lambda: self.participante, self._atualizar_listas
+            self.conteudo, self.gerenciador, self._combo,
+            lambda: self.participante
         )
+        
         self.aba_organizador = TelaOrganizador(
             self.conteudo, self.gerenciador, self._campo, self._combo,
             lambda: self.organizador, self._atualizar_listas
