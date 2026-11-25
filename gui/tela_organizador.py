@@ -6,11 +6,10 @@ from dominio.excecoes import EventoError
 
 
 class TelaOrganizador(ttk.Frame):
-    def __init__(self, pai, gerenciador, criar_campo, criar_combo, organizador_atual, ao_publicar):
+    def __init__(self, pai, gerenciador, criar_campo, criar_combo, organizador_atual):
         super().__init__(pai, padding=16)
         self.gerenciador = gerenciador
         self.organizador_atual = organizador_atual
-        self.ao_publicar = ao_publicar
 
         quadro = ttk.LabelFrame(self, text="Novo evento com a primeira sessão", padding=8)
         quadro.pack(fill="x")
@@ -61,7 +60,7 @@ class TelaOrganizador(ttk.Frame):
             messagebox.showerror("Evento não publicado", str(erro))
             return
 
-        self.ao_publicar()
+        
         for campo in (self.entry_evento, self.entry_capacidade, self.entry_preco, self.entry_data, self.entry_local):
             campo.delete(0, tk.END)
         self.gratuito_alunos.set(False)

@@ -27,6 +27,8 @@ class SistemaEventosGUI:
         configurar_estilos(self.root)
         self._criar_widgets()
         self.gerenciador.adicionar_observador(self._atualizar_listas)
+        self.gerenciador.adicionar_observador(self._atualizar_minhas_inscricoes)
+        self.gerenciador.adicionar_observador(self._atualizar_confirmados)
         self._sair_da_area()
         self._atualizar_listas()
 
@@ -56,7 +58,7 @@ class SistemaEventosGUI:
         
         self.aba_organizador = TelaOrganizador(
             self.conteudo, self.gerenciador, self._campo, self._combo,
-            lambda: self.organizador, self._atualizar_listas
+            lambda: self.organizador
         )
         self.tela_menu = ttk.Frame(self.conteudo, padding=20)
 
@@ -243,6 +245,14 @@ class SistemaEventosGUI:
 
         self.aba_compra.atualizar_eventos()
 
+    def _atualizar_minhas_inscricoes(self):
+        if self.participante is not None:
+            self.consultas.preencher_minhas_inscricoes(self.participante)
+
+    def _atualizar_confirmados(self):
+        if self.organizador is not None:
+            self.consultas.preencher_confirmados()
+
     def _mostrar_minhas_inscricoes(self):
         if self.participante is None:
             return
@@ -265,8 +275,7 @@ class SistemaEventosGUI:
             messagebox.showerror("Inscrição não cancelada", str(erro))
             return
 
-        self._atualizar_listas()
-        self.consultas.preencher_minhas_inscricoes(self.participante)
+       
         messagebox.showinfo("Inscrição cancelada", "A vaga voltou a ficar disponível na agenda.")
 
     def _mostrar_relatorio(self):
